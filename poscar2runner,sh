@@ -1,0 +1,245 @@
+#!/bin/bash
+#Thanks to Joerg Behler
+####################################################################################################
+#
+# File converter VASP POSCAR -> RuNNer DATA
+#
+####################################################################################################
+
+awk 'BEGIN {
+#	UC_LENGTH = 0.529177208613983;
+    UC_LENGTH = 1.889725989;
+	ilat = 0;
+	i = 0;
+	j = 0;
+    na = 0;
+	ne = 0;
+    iatom = 0;
+    ipe = 0;
+    tmpe = 1;
+    lelem[  1] = "H" ;
+    lelem[  2] = "He";
+    lelem[  3] = "Li";
+    lelem[  4] = "Be";
+    lelem[  5] = "B" ;
+    lelem[  6] = "C" ;
+    lelem[  7] = "N" ;
+    lelem[  8] = "O" ;
+    lelem[  9] = "F" ;
+    lelem[ 10] = "Ne";
+    lelem[ 11] = "Na";
+    lelem[ 12] = "Mg";
+    lelem[ 13] = "Al";
+    lelem[ 14] = "Si";
+    lelem[ 15] = "P" ;
+    lelem[ 16] = "S" ;
+    lelem[ 17] = "Cl";
+    lelem[ 18] = "Ar";
+    lelem[ 19] = "K" ;
+    lelem[ 20] = "Ca";
+    lelem[ 21] = "Sc";
+    lelem[ 22] = "Ti";
+    lelem[ 23] = "V" ;
+    lelem[ 24] = "Cr";
+    lelem[ 25] = "Mn";
+    lelem[ 26] = "Fe";
+    lelem[ 27] = "Co";
+    lelem[ 28] = "Ni";
+    lelem[ 29] = "Cu";
+    lelem[ 30] = "Zn";
+    lelem[ 31] = "Ga";
+    lelem[ 32] = "Ge";
+    lelem[ 33] = "As";
+    lelem[ 34] = "Se";
+    lelem[ 35] = "Br";
+    lelem[ 36] = "Kr";
+    lelem[ 37] = "Rb";
+    lelem[ 38] = "Sr";
+    lelem[ 39] = "Y" ;
+    lelem[ 40] = "Zr";
+    lelem[ 41] = "Nb";
+    lelem[ 42] = "Mo";
+    lelem[ 43] = "Tc";
+    lelem[ 44] = "Ru";
+    lelem[ 45] = "Rh";
+    lelem[ 46] = "Pd";
+    lelem[ 47] = "Ag";
+    lelem[ 48] = "Cd";
+    lelem[ 49] = "In";
+    lelem[ 50] = "Sn";
+    lelem[ 51] = "Sb";
+    lelem[ 52] = "Te";
+    lelem[ 53] = "I" ;
+    lelem[ 54] = "Xe";
+    lelem[ 55] = "Cs";
+    lelem[ 56] = "Ba";
+    lelem[ 57] = "La";
+    lelem[ 58] = "Ce";
+    lelem[ 59] = "Pr";
+    lelem[ 60] = "Nd";
+    lelem[ 61] = "Pm";
+    lelem[ 62] = "Sm";
+    lelem[ 63] = "Eu";
+    lelem[ 64] = "Gd";
+    lelem[ 65] = "Tb";
+    lelem[ 66] = "Dy";
+    lelem[ 67] = "Ho";
+    lelem[ 68] = "Er";
+    lelem[ 69] = "Tm";
+    lelem[ 70] = "Yb";
+    lelem[ 71] = "Lu";
+    lelem[ 72] = "Hf";
+    lelem[ 73] = "Ta";
+    lelem[ 74] = "W" ;
+    lelem[ 75] = "Re";
+    lelem[ 76] = "Os";
+    lelem[ 77] = "Ir";
+    lelem[ 78] = "Pt";
+    lelem[ 79] = "Au";
+    lelem[ 80] = "Hg";
+    lelem[ 81] = "Tl";
+    lelem[ 82] = "Pb";
+    lelem[ 83] = "Bi";
+    lelem[ 84] = "Po";
+    lelem[ 85] = "At";
+    lelem[ 86] = "Rn";
+    lelem[ 87] = "Fr";
+    lelem[ 88] = "Ra";
+    lelem[ 89] = "Ac";
+    lelem[ 90] = "Th";
+    lelem[ 91] = "Pa";
+    lelem[ 92] = "U" ;
+    lelem[ 93] = "Np";
+    lelem[ 94] = "Pu";
+    lelem[ 95] = "Am";
+    lelem[ 96] = "Cm";
+    lelem[ 97] = "Bk";
+    lelem[ 98] = "Cf";
+    lelem[ 99] = "Es";
+    lelem[100] = "Fm";
+    lelem[101] = "Md";
+    lelem[102] = "No";
+}
+{
+    if(NR == 1) {
+        comment = $0;
+    }
+    if(NR == 2) {
+        scalef = $1;
+    }
+    if(NR >= 3 && NR <= 5) {
+		ilat++;
+		olat[ilat,1] = $1 * scalef * UC_LENGTH;
+        olat[ilat,2] = $2 * scalef * UC_LENGTH;
+        olat[ilat,3] = $3 * scalef * UC_LENGTH;
+    }
+    if(NR == 1) {
+        ne = NF;
+        for(i=1; i<=ne; i++) {
+            ename[i] = $i;
+        }
+    }
+    if(NR == 6) {
+        for(i=1; i<=ne; i++) {
+            nape[i] = $i;
+            na += nape[i];
+        }
+    }
+    if(NR == 7) {
+        char = substr($1, 0, 1);
+        if(char == "C" || char == "c" || char == "K" || char == "k") {
+            cart = 1;
+        }
+        else {
+            cart = 0;
+        }
+    }
+    if(NR >= 8) {
+        if(i <= na) {
+		    iatom++;
+            ipe++;
+		    x[iatom] = $1;
+            y[iatom] = $2;
+            z[iatom] = $3;
+            es[iatom] = ename[tmpe];
+            if(ipe == nape[tmpe]) {
+                ipe = 0;
+                tmpe++;
+            }
+        }
+    }
+}
+END {
+    # GET NUCLEAR CHARGE OF ALL ELEMENTS
+    for(i=1; i<=ne; i++) {
+        for(j=1; j<=102; j++) {
+            if(ename[i] == lelem[j]) {
+                nucch[i] = j;
+                #printf "%s: %d\n", ename[i], nucch[i];
+                break;
+            }
+        }
+        et[i] = i;
+    }
+
+    # SORT ELEMENTS IN ORDER OF INCREASING NUCLEAR CHARGE
+    i = 1;
+    if(ne > 1) {
+        do {
+            if(nucch[i] > nucch[i+1]) {
+                tmp = et[i];
+                et[i] = et[i+1];
+                et[i+1] = tmp;
+                tmp = nucch[i];
+                nucch[i] = nucch[i+1];
+                nucch[i+1] = tmp;
+                tmp = ename[i];
+                ename[i] = ename[i+1];
+                ename[i+1] = tmp;
+                i = 0;
+            }
+            i++;
+        } while(i<ne);
+    }
+
+    # ASSIGN LAMMPS ELEMENT INDEX TO ATOMS
+	for(i=1; i<=na; i++) {
+		for (j=1; j<=ne; j++) {
+			if(es[i] == ename[j]) {
+                ei[i] = j;
+            }
+		}
+	}
+
+    # TRANSFORM COORDINATES FROM DIRECT TO CARTESIAN IF NECESSARY
+    if(cart == 0) {
+        for(i=1; i<=na; i++) {
+            xtmp = x[i] * olat[1,1] + y[i] * olat[2,1] + z[i] * olat[3,1];
+            ytmp = x[i] * olat[1,2] + y[i] * olat[2,2] + z[i] * olat[3,2];
+            ztmp = x[i] * olat[1,3] + y[i] * olat[2,3] + z[i] * olat[3,3];
+            x[i] = xtmp ;
+            y[i] = ytmp ;
+            z[i] = ztmp ;
+        }
+    }
+    else {
+        for(i=1; i<=na; i++) {
+            x[i] *= scalef ;
+            y[i] *= scalef ;
+            z[i] *= scalef ;
+        }
+    }
+
+printf "begin \n";
+#printf "Comment Generated by poscar2runner.sh, original comment line: %s\n", comment;
+printf "lattice %14.6f %14.6f %14.6f \n",olat[1,1],olat[1,2],olat[1,3];
+printf "lattice %14.6f %14.6f %14.6f \n",olat[2,1],olat[2,2],olat[2,3];
+printf "lattice %14.6f %14.6f %14.6f \n",olat[3,1],olat[3,2],olat[3,3];
+for(i=1; i<=na; i++) {
+printf "atom %14.6f %14.6f %14.6f %s 0.000 0.000 0.000 0.000 0.000\n",x[i]* scalef * UC_LENGTH, y[i]* scalef * UC_LENGTH, z[i]* scalef * UC_LENGTH,es[i];
+}
+printf "energy  0.000000 \n";
+printf "charge  0.000000 \n";
+printf "end \n";
+
+}' 
