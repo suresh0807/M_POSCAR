@@ -1,7 +1,7 @@
 # M_POSCAR
 Set of scripts to reorder a POSCAR file and combine two POSCAR files for VASP
 
-rePOS.sh: Reposition the element order in POSCAR file.
+rePOS.sh: Reposition the element order in POSCAR file. Needs runner2poscar.bash and poscar2runner.sh in your path.
 
 Usage e.g.: ./rePOS.sh 3 W O H
 
