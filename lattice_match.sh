@@ -1,3 +1,4 @@
+#Needs orthorhombic boxa nd cartesian coordinates
 head -n 8 POSCAR1 > POSCAR2-tmp
 x=`awk 'NR==3{print $1/2}' POSCAR1`
 y=`awk 'NR==4{print $2/2}' POSCAR1`
