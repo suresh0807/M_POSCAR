@@ -1,4 +1,7 @@
 !usage: RATTLEPOS.x infile x y z (index cutoff) scale low hi
+!if index > 0 ; then cut a sphere within cutoff radius from the index atom
+!if index < 0; then scale the geometry within hi low values (0.9 - 1.1)
+! if index == 0; only rattle
 ! x is the number of elts and y is the number of rattled structures needed, z is the intensity of the rattle
 ! no constraints for now
 ! 7 lines only before coordinates pls
